@@ -77,6 +77,15 @@
   become: true
   shell: "cd /usr/share/nginx/html; /usr/local/bin/wp --allow-root plugin install wordpress-importer --activate"
   when: wiplugininstalled.rc == 1
+- name: check if wp-globus is installed
+  become: true
+  shell: "cd /usr/share/nginx/html; /usr/local/bin/wp plugin is-installed wp-globus"
+  ignore_errors: true
+  register: wgplugininstalled
+- name: install and activate wp-globus if it's not there
+  become: true
+  shell: "cd /usr/share/nginx/html; /usr/local/bin/wp --allow-root plugin install wp-globus --activate"
+  when: wgplugininstalled.rc == 1
 - name: check if wp-optimize is installed
   become: true
   shell: "cd /usr/share/nginx/html; /usr/local/bin/wp plugin is-installed wp-optimize"
