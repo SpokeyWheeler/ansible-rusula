@@ -1,0 +1,68 @@
+---
+# tasks file for firewalld
+
+- name: Install firewalld
+  become: true
+  dnf:
+    name: firewalld
+    state: latest
+
+- name: Start firewalld and enable firewalld on reboot
+  become: true
+  systemd:
+    enabled: true
+    name: firewalld
+    state: started
+
+- name: Setup firewalld for http
+  become: true
+  firewalld:
+    service: http
+    immediate: yes
+    permanent: yes
+    state: enabled
+
+- name: Setup firewalld for https
+  become: true
+  firewalld:
+    service: https
+    immediate: yes
+    permanent: yes
+    state: enabled
+
+- name: Setup firewalld for loopback
+  become: true
+  firewalld:
+    zone: trusted
+    interface: lo
+    immediate: yes
+    permanent: yes
+    state: enabled
+
+# - name: drop spoofed localhost packets
+  # become: true
+  # firewalld:
+    # rich_rule: rule family=ipv4 source address="127.0.0.1" destination not address="127.0.0.1" drop
+    # zone: drop
+    # permanent: yes
+    # immediate: yes
+    # state: enabled
+
+# - name: check if netdata service is configured
+  # become: true
+  # ignore_errors: true
+  # shell: "firewall-cmd --query-service=netdata"
+  # register: nd_configured
+
+# - name: add netdata service
+  # become: true
+  # shell: "firewall-cmd --new-service=netdata --add-port=19999/tcp --permanent ; firewall-cmd --reload"
+  # when: nd_configured.stdout != "yes"
+
+# - name: Setup firewalld for netdata
+  # become: true
+  # firewalld:
+    # service: netdata
+    # immediate: yes
+    # permanent: yes
+    # state: enabled

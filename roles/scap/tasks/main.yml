@@ -1,0 +1,65 @@
+---
+# tasks file for scap
+- name: install aide
+  become: true
+  dnf:
+    name: aide
+    state: latest
+- name: initialise aide
+  become: true
+  shell: "aide --init"
+- name: set up database
+  become: true
+  copy:
+    src: /var/lib/aide/aide.db.new.gz
+    dest: /var/lib/aide/aide.db.gz
+    remote_src: true
+- name: smoke test aide
+  become: true
+  shell: "aide --check"
+- name: set up daily aide cronjob
+  become: true
+  cron:
+    hour: "1"
+    minute: "0"
+    job: "aide --check"
+    name: daily aide check
+- name: install scap-security-guide
+  become: true
+  dnf:
+    name: scap-security-guide
+    state: latest
+- name: write a compliance report to /tmp for review
+  become: true
+  shell: "oscap xccdf eval --report /tmp/compliance.html --profile ospp /usr/share/xml/scap/ssg/content/ssg-rhel8-ds.xml"
+- name: install openscap-scanner
+  become: true
+  dnf:
+    name: openscap-scanner
+    state: latest
+- name: get latest OVAL definitions
+  become: true
+  get_url:
+    url: "https://www.redhat.com/security/data/oval/v2/RHEL8/rhel-8.oval.xml.bz2"
+    dest: "/tmp/rhel-8.oval.xml.bz2"
+- name: install bzip2
+  become: true
+  dnf:
+    name: bzip2
+    state: latest
+- name: unzip latest OVAL definitions
+  become: true
+  shell: "cd /tmp ; bunzip2 -f rhel-8.oval.xml.bz2"
+- name: write a vulnerability report to /tmp for review
+  become: true
+  shell: "oscap oval eval --report /tmp/vulnerability.html /tmp/rhel-8.oval.xml"
+- name: fetch compliance report for review
+  become: true
+  fetch: 
+    src: /tmp/compliance.html
+    dest: ~/Downloads
+- name: fetch vulnerability report for review
+  become: true
+  fetch: 
+    src: /tmp/vulnerability.html
+    dest: ~/Downloads

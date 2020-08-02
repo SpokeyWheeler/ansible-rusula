@@ -1,0 +1,5 @@
+---
+# tasks file for netdata
+- name: install netdata
+  become: true
+  shell: "bash <(curl -Ss https://my-netdata.io/kickstart.sh)"

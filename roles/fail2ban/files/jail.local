@@ -1,0 +1,12 @@
+[DEFAULT]
+# Set a 1 hour ban
+bantime = 10m
+findtime = 10m 
+maxretry = 5
+
+# Override /etc/fail2ban/jail.d/00-firewalld.conf:
+banaction = firewallcmd-multiport
+banaction_allports = firewallcmd-allports
+
+[sshd]
+enabled = true

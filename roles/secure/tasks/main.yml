@@ -1,0 +1,14 @@
+---
+# tasks file for configure
+- name: disable root login
+  become: true
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin yes'
+    line: PermitRootLogin no
+- name: fail after 3 logins
+  become: true
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#MaxAuthTries 6'
+    line: MaxAuthTries 3

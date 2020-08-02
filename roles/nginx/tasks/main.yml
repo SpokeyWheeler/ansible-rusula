@@ -1,0 +1,21 @@
+---
+# tasks file for nginx
+
+- name: Create nginx repo file
+  become: true
+  copy:
+    dest: /etc/yum.repos.d/nginx.repo
+    src: nginx.repo
+
+- name: Install Nginx
+  become: true
+  dnf:
+    name: nginx
+    state: latest
+
+- name: Start Nginx and enable Nginx on reboot
+  become: true
+  systemd:
+    enabled: true
+    name: nginx
+    state: started

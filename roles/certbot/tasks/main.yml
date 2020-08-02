@@ -1,0 +1,24 @@
+---
+# tasks file for certbot
+- name: install certbot
+  become: true
+  dnf:
+    name: certbot
+    state: latest
+- name: install certbot nginx dependencies
+  become: true
+  dnf:
+    name: python3-certbot-nginx
+    state: latest
+- name: get certificate and reconfigure nginx
+  become: true
+  shell: "certbot --nginx --email clareangelabrown@hotmail.com --domain rusula.ovh --domain www.rusula.ovh --non-interactive --agree-tos"
+  ignore_errors: true
+- name: set up auto-renew cron job like "0 0,12 * * * root python3 -c 'import random; import time; time.sleep(random.random() * 3600)' && certbot renew -q"
+  become: true
+  cron:
+    name: "auto-renew SSL certs"
+    minute: "0"
+    hour: "0,12"
+    job: "# python3 -c 'import random; import time; time.sleep(random.random() * 3600)' && certbot renew -q"
+    user: root

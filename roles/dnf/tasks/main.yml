@@ -1,0 +1,31 @@
+---
+# tasks file for dnf
+
+- name: Update DNF
+  become: true
+  dnf:
+    name: "*"
+    state: latest
+- name: install dnf-automatic
+  become: true
+  dnf:
+    name: dnf-automatic
+    state: latest
+- name: fix emit_via in automatic.conf
+  become: true
+  lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: '^emit_via =.*stdio'
+    line: emit_via = motd
+- name: fix apply_updates in automatic.conf
+  become: true
+  lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: '^apply_updates = no'
+    line: apply_updates = yes
+- name: start and enable dnf-automatic
+  become: true
+  systemd:
+    name: dnf-automatic.timer
+    state: started
+    enabled: true

@@ -1,0 +1,62 @@
+---
+# tasks file for mariadb
+- name: install mariadb
+  become: true
+  yum:
+    name:
+      - mariadb-server
+      - python3-PyMySQL
+    state: latest
+- name: start mariadb
+  become: true
+  service:
+    name: mariadb
+    enabled: true
+    state: started
+- name: mysql_root_password
+  become: true
+  no_log: true
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    user: root
+    check_implicit_admin: true
+    password: "{{ mysql_root_password }}"
+    host: localhost
+- name: remove remote root
+  become: true
+  no_log: true
+  mysql_user:
+    check_implicit_admin: true
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    user: root
+    host: "{{ ansible_fqdn }}"
+    state: absent
+- name: Remove all anonymous user accounts
+  become: true
+  no_log: true
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: ''
+    host_all: yes
+    state: absent
+- name: Create database 'wordpress'
+  become: true
+  no_log: true
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: wordpress
+    state: present
+- name: Create database user 'wordpressuser'
+  become: true
+  no_log: true
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: wordpressuser
+    password: "{{ mysql_wordpressuser_password }}"
+    priv: 'wordpress.*:ALL'
+    state: present

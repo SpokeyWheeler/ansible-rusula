@@ -1,0 +1,13 @@
+---
+- hosts: all
+  roles:
+    - secure
+    - dnf
+    - nginx
+    - firewalld
+    - mariadb
+    - php
+    - wpcli
+    - selinux
+    - fail2ban
+    - scap

@@ -1,0 +1,23 @@
+---
+# tasks file for fail2ban
+- name: install fail2ban
+  become: true
+  dnf:
+    name: fail2ban
+    state: latest
+
+- name: copy in jail.local
+  become: true
+  copy:
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+  
+- name: start and enable fail2ban service
+  become: true
+  systemd:
+    state: started
+    name: fail2ban
+    enabled: true

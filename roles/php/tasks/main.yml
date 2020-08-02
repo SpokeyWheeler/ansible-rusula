@@ -1,0 +1,69 @@
+---
+# tasks file for php
+- name: add EPEL repo
+  become: true
+  dnf:
+    name:
+      - epel-release
+      - dnf-utils
+    state: latest
+- name: add REMI repo
+  become: true
+  dnf:
+    name: 'http://rpms.remirepo.net/enterprise/remi-release-8.rpm'
+    state: latest
+- name: make 7.4 the default stream
+  become: true
+  dnf:
+    name: '@php:remi-7.4'
+    state: present
+  # shell: 'dnf module reset php -y; dnf module enable php:remi-7.4 -y'
+- name: install php 7.4
+  become: true
+  dnf:
+    name:
+      - php-fpm
+      - php-common
+      - php-cli
+      - php-mysqlnd
+      - php-pecl-json
+      - php-mbstring
+      - php-mysqli
+      - php-openssl
+      - php-pecl-imagick
+      - php-xml
+      - php-pecl-zip
+      - php-gd
+      - php-pecl-mcrypt
+      - php-pecl-ssh2
+    state: latest
+- name: fix user in php-fhm config
+  become: true
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^user = apache'
+    line: user = nginx
+- name: fix group in php-fhm config
+  become: true
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^group = apache'
+    line: group = nginx
+- name: fix listen.owner in php-fhm config
+  become: true
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^;listen\.owner = nobody'
+    line: listen.owner = nginx
+- name: fix listen.group in php-fhm config
+  become: true
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^;listen\.group = nobody'
+    line: listen.group = nginx
+- name: start FPM service
+  become: true
+  systemd:
+    name: php-fpm
+    enabled: true
+    state: started
