@@ -1,5 +1,5 @@
 ---
-# tasks file for wpcli
+#optimize tasks file for wpcli
 - name: check if wp-cli is installed
   become: true
   stat:
@@ -77,14 +77,14 @@
   become: true
   shell: "cd /usr/share/nginx/html; /usr/local/bin/wp --allow-root plugin install wordpress-importer --activate"
   when: wiplugininstalled.rc == 1
-- name: check if wp-globus is installed
+- name: check if wpglobus is installed
   become: true
-  shell: "cd /usr/share/nginx/html; /usr/local/bin/wp plugin is-installed wp-globus"
+  shell: "cd /usr/share/nginx/html; /usr/local/bin/wp plugin is-installed wpglobus"
   ignore_errors: true
   register: wgplugininstalled
-- name: install and activate wp-globus if it's not there
+- name: install and activate wpglobus if it's not there
   become: true
-  shell: "cd /usr/share/nginx/html; /usr/local/bin/wp --allow-root plugin install wp-globus --activate"
+  shell: "cd /usr/share/nginx/html; /usr/local/bin/wp --allow-root plugin install wpglobus --activate"
   when: wgplugininstalled.rc == 1
 - name: check if wp-optimize is installed
   become: true
